@@ -1,44 +1,57 @@
+using Dal;
+using Dal.Repositories.Interfaces;
+using Dal.Repositories.Implementations;
+using Logic.Managers;
+using Api.UseCases.Interfaces;
+using Api.UseCases;
+using Dal.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Controllers + Swagger
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// EF Core (PostgreSQL)
+builder.Services.AddDbContext<GiftCatalogDbContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("GiftCatalogDb")));
+
+// DAL: repositories
+builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+builder.Services.AddScoped<IDenominationRepository, DenominationRepository>();
+builder.Services.AddScoped<IBatchRepository, BatchRepository>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
+
+// Logic: managers
+builder.Services.AddScoped<VendorManager>();
+builder.Services.AddScoped<DenominationManager>();
+builder.Services.AddScoped<BatchesManager>();
+builder.Services.AddScoped<CardsManager>();
+
+// API UseCase managers
+builder.Services.AddScoped<IVendorUseCaseManager, VendorUseCaseManager>();
+builder.Services.AddScoped<IDenominationUseCaseManager, DenominationUseCaseManager>();
+builder.Services.AddScoped<IBatchUseCaseManager, BatchUseCaseManager>();
+builder.Services.AddScoped<ICardUseCaseManager, CardUseCaseManager>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Если нужен HTTPS — оставь, иначе можно убрать при локалке Docker
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Маршрутизация контроллеров
+app.MapControllers();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+// Health
+app.MapGet("/health", () => Results.Ok(new { status = "ok", time = DateTime.UtcNow }));
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
