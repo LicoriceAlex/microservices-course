@@ -1,7 +1,7 @@
 
 # Курс по микросервисной архитектуре Artsofte
 
-# Система управления подарочными картами (GiftCards System)
+# Система управления подарочными картами
 
 ## 1. Функциональные требования
 
@@ -21,7 +21,7 @@
 
 Система разделена на два микросервиса:
 
-### **1. GiftCatalogApi (трёхслойная архитектура)**
+### **2.1 GiftCatalogApi (трёхслойная архитектура)**
 
 **Назначение:** управляет всеми справочными и базовыми сущностями — вендорами, номиналами, партиями и картами.
 
@@ -36,7 +36,28 @@
 - Logic
 - Dal
 
-### **2. Activation (Onion-архитектура)**
+**REST:**
+- POST /api/vendors — создать вендора
+- GET /api/vendors/{id} — получить вендора
+- GET /api/vendors — список вендоров (с фильтрацией и пагинацией)
+- PUT /api/vendors/{id} — обновить вендора
+- DELETE /api/vendors/{id} — удалить вендора
+- POST /api/denominations — создать номинал
+- GET /api/denominations/{id} — получить номинал
+- GET /api/denominations — список номиналов
+- PUT /api/denominations/{id} — обновить номинал
+- DELETE /api/denominations/{id} — удалить номинал
+- POST /api/batches — создать партию и сгенерировать карты
+- GET /api/batches/{id} — получить информацию о партии
+- GET /api/batches — список партий
+- PUT /api/batches/{id}/close — закрыть партию
+- GET /api/cards/{id} — получить карту
+- GET /api/cards — список карт
+- PUT /api/cards/{id}/block — заблокировать карту
+- PUT /api/cards/{id}/unblock — разблокировать карту
+- GET /health — проверить состояние сервиса
+
+### **2.2 ActivationServiceApi (Onion-архитектура)**
 
 **Назначение:** управляет процессом активации карты пользователем.
 
@@ -52,4 +73,14 @@
 - Domain
 - Infrastructure
 
+**REST:**
+- POST /api/users — создать пользователя
+- GET /api/users/{id} — получить пользователя
+- GET /api/users — список пользователей
+- POST /api/activations — создать активацию карты
+- GET /api/activations/{id} — получить активацию
+- GET /api/activations — список активаций
+- GET /health — проверить состояние сервиса
+
 ## 3. System Design схема
+<img width="542" height="193" alt="микросервисы drawio" src="https://github.com/user-attachments/assets/196d0a80-859f-4cd9-ab13-1187ece3cf55" />
