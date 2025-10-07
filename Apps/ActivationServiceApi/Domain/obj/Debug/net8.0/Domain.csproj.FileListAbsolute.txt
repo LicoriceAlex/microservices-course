@@ -1,0 +1,12 @@
+C:\microservices-course\Apps\ActivationServiceApi\Domain\bin\Debug\net8.0\Domain.deps.json
+C:\microservices-course\Apps\ActivationServiceApi\Domain\bin\Debug\net8.0\Domain.dll
+C:\microservices-course\Apps\ActivationServiceApi\Domain\bin\Debug\net8.0\Domain.pdb
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.dll
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\refint\Domain.dll
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\Domain.pdb
+C:\microservices-course\Apps\ActivationServiceApi\Domain\obj\Debug\net8.0\ref\Domain.dll
