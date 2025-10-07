@@ -1,25 +1,80 @@
 using Api.Controllers.Denominations.Dtos;
 using Api.UseCases.Interfaces;
-using Logic.Managers;
+using Logic.Managers.Interfaces;
 
 namespace Api.UseCases;
 
-/// <summary>Юзкейс-менеджер номиналов.</summary>
+/// <summary>
+/// Юзкейс-менеджер номиналов
+/// </summary>
 public class DenominationUseCaseManager : IDenominationUseCaseManager
 {
-    private readonly DenominationManager _mgr;
-    public DenominationUseCaseManager(DenominationManager mgr) { _mgr = mgr; }
-
-    public async Task<List<DenominationResponse>> GetAllAsync() =>
-        (await _mgr.GetAllAsync()).Select(x => new DenominationResponse(x.Id, x.Amount, x.Currency, x.IsActive, x.CreatedAt)).ToList();
-
-    public async Task<DenominationResponse?> GetByIdAsync(Guid id)
+    private readonly IDenominationManager _denominationManager;
+    
+    public DenominationUseCaseManager(IDenominationManager denominationManager)
     {
-        var d = await _mgr.GetByIdAsync(id);
-        return d is null ? null : new DenominationResponse(d.Id, d.Amount, d.Currency, d.IsActive, d.CreatedAt);
+        _denominationManager = denominationManager;
     }
 
-    public Task<Guid> CreateAsync(DenominationCreateRequest dto) => _mgr.CreateAsync(dto.Amount, dto.Currency, dto.IsActive);
-    public Task UpdateAsync(Guid id, DenominationUpdateRequest dto) => _mgr.UpdateAsync(id, dto.Amount, dto.Currency, dto.IsActive);
-    public Task DeleteAsync(Guid id) => _mgr.DeleteAsync(id);
+    /// <inheritdoc />
+    public async Task<List<DenominationResponse>> GetAllAsync()
+    {
+        var entities = await _denominationManager.GetAllAsync();
+        var result = new List<DenominationResponse>(entities.Count);
+
+        foreach (var entity in entities)
+        {
+            var dto = new DenominationResponse
+            {
+                Id = entity.Id,
+                Amount = entity.Amount,
+                Currency = entity.Currency,
+                IsActive = entity.IsActive,
+                CreatedAt = entity.CreatedAt
+            };
+            result.Add(dto);
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<DenominationResponse?> GetByIdAsync(Guid id)
+    {
+        var entity = await _denominationManager.GetByIdAsync(id);
+        if (entity is null)
+        {
+            return null;
+        }
+
+        var dto = new DenominationResponse
+        {
+            Id = entity.Id,
+            Amount = entity.Amount,
+            Currency = entity.Currency,
+            IsActive = entity.IsActive,
+            CreatedAt = entity.CreatedAt
+        };
+
+        return dto;
+    }
+
+    /// <inheritdoc />
+    public async Task<Guid> CreateAsync(DenominationCreateRequest dto)
+    {
+        var denominationId = await _denominationManager.CreateAsync(dto.Amount, dto.Currency, dto.IsActive);
+        return denominationId;
+    }
+
+    /// <inheritdoc />
+    public async Task UpdateAsync(Guid id, DenominationUpdateRequest dto)
+    {
+        await _denominationManager.UpdateAsync(id, dto.Amount, dto.Currency, dto.IsActive);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(Guid id)
+    {
+        await _denominationManager.DeleteAsync(id);
+    }
 }

@@ -5,6 +5,7 @@ using Logic.Managers;
 using Api.UseCases.Interfaces;
 using Api.UseCases;
 using Dal.Repositories;
+using Logic.Managers.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,10 +26,10 @@ builder.Services.AddScoped<IBatchRepository, BatchRepository>();
 builder.Services.AddScoped<ICardRepository, CardRepository>();
 
 // Logic: managers
-builder.Services.AddScoped<VendorManager>();
-builder.Services.AddScoped<DenominationManager>();
-builder.Services.AddScoped<BatchesManager>();
-builder.Services.AddScoped<CardsManager>();
+builder.Services.AddScoped<IVendorManager, VendorManager>();
+builder.Services.AddScoped<IDenominationManager, DenominationManager>();
+builder.Services.AddScoped<IBatchesManager, BatchesManager>();
+builder.Services.AddScoped<ICardsManager, CardsManager>();
 
 // API UseCase managers
 builder.Services.AddScoped<IVendorUseCaseManager, VendorUseCaseManager>();

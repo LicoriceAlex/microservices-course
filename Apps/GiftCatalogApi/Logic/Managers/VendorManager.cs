@@ -1,42 +1,35 @@
 using Dal.Models;
 using Dal.Repositories.Interfaces;
+using Logic.Managers.Interfaces;
 
 namespace Logic.Managers;
 
 /// <summary>
 /// Менеджер бизнес-логики для работы с вендорами.
 /// </summary>
-public class VendorManager
+public class VendorManager : IVendorManager
 {
     private readonly IVendorRepository _repo;
-
-    /// <summary>
-    /// Конструктор.
-    /// </summary>
+    
     public VendorManager(IVendorRepository repo)
     {
         _repo = repo;
     }
 
-    /// <summary>
-    /// Получить всех вендоров.
-    /// </summary>
-    public Task<List<VendorDal>> GetAllAsync()
+    /// <inheritdoc />
+
+    public async Task<List<VendorDal>> GetAllAsync()
     {
-        return _repo.GetAllAsync();
+        return await _repo.GetAllAsync();
     }
 
-    /// <summary>
-    /// Получить вендора по идентификатору.
-    /// </summary>
-    public Task<VendorDal?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<VendorDal?> GetByIdAsync(Guid id)
     {
-        return _repo.GetByIdAsync(id);
+        return await _repo.GetByIdAsync(id);
     }
 
-    /// <summary>
-    /// Создать вендора.
-    /// </summary>
+    /// <inheritdoc />
     public async Task<Guid> CreateAsync(string name, string slug, bool isActive = true)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -59,9 +52,7 @@ public class VendorManager
         return await _repo.CreateAsync(entity);
     }
 
-    /// <summary>
-    /// Обновить вендора.
-    /// </summary>
+    /// <inheritdoc />
     public async Task UpdateAsync(Guid id, string name, string slug, bool isActive)
     {
         var existing = await _repo.GetByIdAsync(id);
@@ -87,11 +78,9 @@ public class VendorManager
         await _repo.UpdateAsync(existing);
     }
 
-    /// <summary>
-    /// Удалить вендора.
-    /// </summary>
-    public Task DeleteAsync(Guid id)
+    /// <inheritdoc />
+    public async Task DeleteAsync(Guid id)
     {
-        return _repo.DeleteAsync(id);
+        await _repo.DeleteAsync(id);
     }
 }

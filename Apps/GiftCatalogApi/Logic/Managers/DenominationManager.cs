@@ -1,42 +1,34 @@
 using Dal.Models;
 using Dal.Repositories.Interfaces;
+using Logic.Managers.Interfaces;
 
 namespace Logic.Managers;
 
 /// <summary>
 /// Менеджер бизнес-логики для работы с номиналами.
 /// </summary>
-public class DenominationManager
+public class DenominationManager : IDenominationManager
 {
     private readonly IDenominationRepository _repo;
-
-    /// <summary>
-    /// Конструктор.
-    /// </summary>
+    
     public DenominationManager(IDenominationRepository repo)
     {
         _repo = repo;
     }
-
-    /// <summary>
-    /// Получить все номиналы.
-    /// </summary>
-    public Task<List<DenominationDal>> GetAllAsync()
+    
+    /// <inheritdoc />
+    public async Task<List<DenominationDal>> GetAllAsync()
     {
-        return _repo.GetAllAsync();
+        return await _repo.GetAllAsync();
     }
 
-    /// <summary>
-    /// Получить номинал по идентификатору.
-    /// </summary>
-    public Task<DenominationDal?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<DenominationDal?> GetByIdAsync(Guid id)
     {
-        return _repo.GetByIdAsync(id);
+        return await _repo.GetByIdAsync(id);
     }
 
-    /// <summary>
-    /// Создать номинал.
-    /// </summary>
+    /// <inheritdoc />
     public async Task<Guid> CreateAsync(decimal amount, string currency, bool isActive = true)
     {
         if (amount <= 0)
@@ -59,9 +51,7 @@ public class DenominationManager
         return await _repo.CreateAsync(entity);
     }
 
-    /// <summary>
-    /// Обновить номинал.
-    /// </summary>
+    /// <inheritdoc />
     public async Task UpdateAsync(Guid id, decimal amount, string currency, bool isActive)
     {
         var existing = await _repo.GetByIdAsync(id);
@@ -87,11 +77,9 @@ public class DenominationManager
         await _repo.UpdateAsync(existing);
     }
 
-    /// <summary>
-    /// Удалить номинал.
-    /// </summary>
-    public Task DeleteAsync(Guid id)
+    /// <inheritdoc />
+    public async Task DeleteAsync(Guid id)
     {
-        return _repo.DeleteAsync(id);
+        await _repo.DeleteAsync(id);
     }
 }

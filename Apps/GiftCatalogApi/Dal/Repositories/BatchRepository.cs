@@ -16,19 +16,22 @@ public class BatchRepository : IBatchRepository
         _db = db;
     }
 
+    /// <inheritdoc />
     public async Task<List<GiftBatchDal>> GetAllAsync()
     {
         return await _db.Batches.AsNoTracking().ToListAsync();
     }
-
+    
+    /// <inheritdoc />
     public async Task<GiftBatchDal?> GetByIdAsync(Guid id)
     {
         return await _db.Batches.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
     }
 
+    /// <inheritdoc />
     public async Task<Guid> CreateWithCardsAsync(GiftBatchDal batchDal, IEnumerable<GiftCardDal> cards)
     {
-        using var tx = await _db.Database.BeginTransactionAsync();
+        await using var tx = await _db.Database.BeginTransactionAsync();
         _db.Batches.Add(batchDal);
         await _db.SaveChangesAsync();
 
@@ -44,6 +47,7 @@ public class BatchRepository : IBatchRepository
         return batchDal.Id;
     }
 
+    /// <inheritdoc />
     public async Task CloseAsync(Guid id)
     {
         var batch = await _db.Batches.FindAsync(id);

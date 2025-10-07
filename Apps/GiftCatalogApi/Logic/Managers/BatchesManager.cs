@@ -1,5 +1,6 @@
 using Dal.Models;
 using Dal.Repositories.Interfaces;
+using Logic.Managers.Interfaces;
 using Logic.Utilities;
 
 namespace Logic.Managers;
@@ -7,37 +8,28 @@ namespace Logic.Managers;
 /// <summary>
 /// Менеджер для партий подарочных карт
 /// </summary>
-public class BatchesManager
+public class BatchesManager : IBatchesManager
 {
     private readonly IBatchRepository _batches;
-
-    /// <summary>
-    /// Конструктор
-    /// </summary>
+    
     public BatchesManager(IBatchRepository batches)
     {
         _batches = batches;
     }
 
-    /// <summary>
-    /// Получить все партии
-    /// </summary>
-    public Task<List<GiftBatchDal>> GetAllAsync()
+    /// <inheritdoc />
+    public async Task<List<GiftBatchDal>> GetAllAsync()
     {
-        return _batches.GetAllAsync();
+        return await _batches.GetAllAsync();
     }
 
-    /// <summary>
-    /// Получить партию по идентификатору
-    /// </summary>
-    public Task<GiftBatchDal?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<GiftBatchDal?> GetByIdAsync(Guid id)
     {
-        return _batches.GetByIdAsync(id);
+        return await _batches.GetByIdAsync(id);
     }
 
-    /// <summary>
-    /// Создать партию и сгенерировать карты
-    /// </summary>
+    /// <inheritdoc />
     public async Task<Guid> CreateAsync(Guid vendorId, Guid denominationId, int count, DateTime expireAtUtc)
     {
         if (count <= 0)
@@ -83,9 +75,7 @@ public class BatchesManager
         return await _batches.CreateWithCardsAsync(batch, cards);
     }
 
-    /// <summary>
-    /// Закрыть партию (перевод статуса в Closed)
-    /// </summary>
+    /// <inheritdoc />
     public async Task CloseAsync(Guid id)
     {
         var existing = await _batches.GetByIdAsync(id);

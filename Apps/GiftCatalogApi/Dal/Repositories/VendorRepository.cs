@@ -16,16 +16,19 @@ public class VendorRepository : IVendorRepository
         _db = db;
     }
 
+    /// <inheritdoc />
     public async Task<List<VendorDal>> GetAllAsync()
     {
         return await _db.Vendors.AsNoTracking().ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<VendorDal?> GetByIdAsync(Guid id)
     {
         return await _db.Vendors.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
     }
 
+    /// <inheritdoc />
     public async Task<Guid> CreateAsync(VendorDal vendorDal)
     {
         _db.Vendors.Add(vendorDal);
@@ -33,12 +36,14 @@ public class VendorRepository : IVendorRepository
         return vendorDal.Id;
     }
 
+    /// <inheritdoc />
     public async Task UpdateAsync(VendorDal vendorDal)
     {
         _db.Vendors.Update(vendorDal);
         await _db.SaveChangesAsync();
     }
-
+    
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id)
     {
         var entity = await _db.Vendors.FindAsync(id);

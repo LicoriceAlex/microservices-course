@@ -1,28 +1,78 @@
 using Api.Controllers.Batches.Dtos;
 using Api.UseCases.Interfaces;
-using Logic.Managers;
+using Logic.Managers.Interfaces;
 
 namespace Api.UseCases;
 
-/// <summary>Юзкейс-менеджер партий.</summary>
+/// <summary>
+/// Юзкейс-менеджер партий
+/// </summary>
 public class BatchUseCaseManager : IBatchUseCaseManager
 {
-    private readonly BatchesManager _batchesManager;
-
-    public BatchUseCaseManager(BatchesManager batchesManager)
+    private readonly IBatchesManager _batchesManager;
+    
+    public BatchUseCaseManager(IBatchesManager batchesManager)
     {
         _batchesManager = batchesManager;
     }
 
-    public async Task<List<BatchResponse>> GetAllAsync() =>
-        (await _batchesManager.GetAllAsync()).Select(x => new BatchResponse(x.Id, x.VendorId, x.DenominationId, x.Count, x.ExpireAt, x.Status.ToString(), x.CreatedAt)).ToList();
-
-    public async Task<BatchResponse?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<List<BatchResponse>> GetAllAsync()
     {
-        var b = await _batchesManager.GetByIdAsync(id);
-        return b is null ? null : new BatchResponse(b.Id, b.VendorId, b.DenominationId, b.Count, b.ExpireAt, b.Status.ToString(), b.CreatedAt);
+        var entities = await _batchesManager.GetAllAsync();
+        var result = new List<BatchResponse>(entities.Count);
+
+        foreach (var x in entities)
+        {
+            var dto = new BatchResponse
+            {
+                Id = x.Id,
+                VendorId = x.VendorId,
+                DenominationId = x.DenominationId,
+                Count = x.Count,
+                ExpireAt = x.ExpireAt,
+                Status = x.Status.ToString(),
+                CreatedAt = x.CreatedAt
+            };
+            result.Add(dto);
+        }
+
+        return result;
     }
 
-    public Task<Guid> CreateAsync(BatchCreateRequest dto) => _batchesManager.CreateAsync(dto.VendorId, dto.DenominationId, dto.Count, dto.ExpireAtUtc);
-    public Task CloseAsync(Guid id) => _batchesManager.CloseAsync(id);
+    /// <inheritdoc />
+    public async Task<BatchResponse?> GetByIdAsync(Guid id)
+    {
+        var giftBatchDal = await _batchesManager.GetByIdAsync(id);
+        if (giftBatchDal is null)
+        {
+            return null;
+        }
+
+        var dto = new BatchResponse
+        {
+            Id = giftBatchDal.Id,
+            VendorId = giftBatchDal.VendorId,
+            DenominationId = giftBatchDal.DenominationId,
+            Count = giftBatchDal.Count,
+            ExpireAt = giftBatchDal.ExpireAt,
+            Status = giftBatchDal.Status.ToString(),
+            CreatedAt = giftBatchDal.CreatedAt
+        };
+
+        return dto;
+    }
+
+    /// <inheritdoc />
+    public async Task<Guid> CreateAsync(BatchCreateRequest dto)
+    {
+        var batchId = await _batchesManager.CreateAsync(dto.VendorId, dto.DenominationId, dto.Count, dto.ExpireAtUtc);
+        return batchId;
+    }
+
+    /// <inheritdoc />
+    public async Task CloseAsync(Guid id)
+    {
+        await _batchesManager.CloseAsync(id);
+    }
 }

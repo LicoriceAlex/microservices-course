@@ -16,16 +16,19 @@ public class CardRepository : ICardRepository
         _db = db;
     }
 
+    /// <inheritdoc />
     public async Task<List<GiftCardDal>> GetAllAsync()
     {
         return await _db.Cards.AsNoTracking().ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<GiftCardDal?> GetByIdAsync(Guid id)
     {
         return await _db.Cards.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    /// <inheritdoc />
     public async Task SetStatusAsync(Guid id, GiftCardStatus status)
     {
         var card = await _db.Cards.FindAsync(id);

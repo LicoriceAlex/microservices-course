@@ -79,7 +79,7 @@ public class GiftCatalogDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(x => x.Status)
-                .HasConversion<string>() // Enum как строка
+                .HasConversion<string>()
                 .HasMaxLength(32)
                 .IsRequired();
         });
@@ -99,7 +99,7 @@ public class GiftCatalogDbContext : DbContext
             entity.HasIndex(x => x.CodeHash).IsUnique();
 
             entity.Property(x => x.Status)
-                .HasConversion<string>() // Enum как строка
+                .HasConversion<string>()
                 .HasMaxLength(32)
                 .IsRequired();
         });

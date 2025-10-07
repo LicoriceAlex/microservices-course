@@ -1,42 +1,34 @@
 using Dal.Models;
 using Dal.Repositories.Interfaces;
+using Logic.Managers.Interfaces;
 
 namespace Logic.Managers;
 
 /// <summary>
 /// Менеджер для подарочных карт
 /// </summary>
-public class CardsManager
+public class CardsManager : ICardsManager
 {
     private readonly ICardRepository _repo;
-
-    /// <summary>
-    /// Конструктор
-    /// </summary>
+    
     public CardsManager(ICardRepository repo)
     {
         _repo = repo;
     }
 
-    /// <summary>
-    /// Получить все карты.
-    /// </summary>
-    public Task<List<GiftCardDal>> GetAllAsync()
+    /// <inheritdoc />
+    public async Task<List<GiftCardDal>> GetAllAsync()
     {
-        return _repo.GetAllAsync();
+        return await _repo.GetAllAsync();
     }
 
-    /// <summary>
-    /// Получить карту по идентификатору.
-    /// </summary>
-    public Task<GiftCardDal?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<GiftCardDal?> GetByIdAsync(Guid id)
     {
-        return _repo.GetByIdAsync(id);
+        return await _repo.GetByIdAsync(id);
     }
 
-    /// <summary>
-    /// Заблокировать карту (запрещено для Activated и Expired).
-    /// </summary>
+    /// <inheritdoc />
     public async Task BlockAsync(Guid id)
     {
         var card = await _repo.GetByIdAsync(id);
@@ -53,9 +45,7 @@ public class CardsManager
         await _repo.SetStatusAsync(id, GiftCardStatus.Blocked);
     }
 
-    /// <summary>
-    /// Разблокировать карту (только из состояния Blocked → Available).
-    /// </summary>
+    /// <inheritdoc />
     public async Task UnblockAsync(Guid id)
     {
         var card = await _repo.GetByIdAsync(id);
