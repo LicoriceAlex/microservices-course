@@ -1,12 +1,13 @@
+using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Services.Contracts.Models;
 using Services.Contracts.Repositories;
 
 namespace Infrastructure.Repositories;
 
 /// <summary>
-/// репозиторий активаций на ef core
+/// Репозиторий активаций на ef core
 /// </summary>
 public class ActivationRepository : IActivationRepository
 {
@@ -17,81 +18,98 @@ public class ActivationRepository : IActivationRepository
         _db = db;
     }
 
-    public async Task<Guid> CreateAsync(ActivationData a)
+    /// <inheritdoc />
+    public async Task<Guid> CreateAsync(Activation a)
     {
-        var e = new ActivationEntity
+        var activationEntity = new ActivationEntity
         {
             Id = a.Id,
             UserId = a.UserId,
             CardCodeHash = a.CardCodeHash,
             IdempotencyKey = a.IdempotencyKey,
-            Status = a.Status,
+            Status = a.Status.ToString(),
             CreatedAt = a.CreatedAt,
             ConfirmedAt = a.ConfirmedAt
         };
-        _db.Activations.Add(e);
+        _db.Activations.Add(activationEntity);
         await _db.SaveChangesAsync();
-        return e.Id;
+        return activationEntity.Id;
     }
 
-    public async Task<ActivationData?> GetAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<Activation?> GetAsync(Guid id)
     {
-        var e = await _db.Activations.FindAsync(id);
-        if (e is null) return null;
-        return new ActivationData
+        var activationEntity = await _db.Activations.FindAsync(id);
+        if (activationEntity is null)
         {
-            Id = e.Id,
-            UserId = e.UserId,
-            CardCodeHash = e.CardCodeHash,
-            IdempotencyKey = e.IdempotencyKey,
-            Status = e.Status,
-            CreatedAt = e.CreatedAt,
-            ConfirmedAt = e.ConfirmedAt
+            return null;
+        }
+
+        return new Activation
+        {
+            Id = activationEntity.Id,
+            UserId = activationEntity.UserId,
+            CardCodeHash = activationEntity.CardCodeHash,
+            IdempotencyKey = activationEntity.IdempotencyKey,
+            Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),
+            CreatedAt = activationEntity.CreatedAt,
+            ConfirmedAt = activationEntity.ConfirmedAt
         };
     }
 
-    public async Task<List<ActivationData>> GetAllAsync()
+    /// <inheritdoc />
+    public async Task<List<Activation>> GetAllAsync()
     {
         var list = await _db.Activations.AsNoTracking().OrderByDescending(x => x.CreatedAt).ToListAsync();
-        var result = new List<ActivationData>(list.Count);
-        foreach (var e in list)
+        var result = new List<Activation>(list.Count);
+        foreach (var activationEntity in list)
         {
-            result.Add(new ActivationData
+            result.Add(new Activation
             {
-                Id = e.Id,
-                UserId = e.UserId,
-                CardCodeHash = e.CardCodeHash,
-                IdempotencyKey = e.IdempotencyKey,
-                Status = e.Status,
-                CreatedAt = e.CreatedAt,
-                ConfirmedAt = e.ConfirmedAt
+                Id = activationEntity.Id,
+                UserId = activationEntity.UserId,
+                CardCodeHash = activationEntity.CardCodeHash,
+                IdempotencyKey = activationEntity.IdempotencyKey,
+                Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),
+                CreatedAt = activationEntity.CreatedAt,
+                ConfirmedAt = activationEntity.ConfirmedAt
             });
         }
         return result;
     }
 
-    public async Task<ActivationData?> GetByIdempotencyKeyAsync(string key)
+    /// <inheritdoc />
+    public async Task<Activation?> GetByIdempotencyKeyAsync(string key)
     {
-        var e = await _db.Activations.AsNoTracking().FirstOrDefaultAsync(x => x.IdempotencyKey == key);
-        if (e is null) return null;
-        return new ActivationData
+        var activationEntity = await _db.Activations.AsNoTracking().FirstOrDefaultAsync(x => x.IdempotencyKey == key);
+        if (activationEntity is null)
         {
-            Id = e.Id,
-            UserId = e.UserId,
-            CardCodeHash = e.CardCodeHash,
-            IdempotencyKey = e.IdempotencyKey,
-            Status = e.Status,
-            CreatedAt = e.CreatedAt,
-            ConfirmedAt = e.ConfirmedAt
+            return null;
+        }
+
+        return new Activation
+        {
+            Id = activationEntity.Id,
+            UserId = activationEntity.UserId,
+            CardCodeHash = activationEntity.CardCodeHash,
+            IdempotencyKey = activationEntity.IdempotencyKey,
+            Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),
+            CreatedAt = activationEntity.CreatedAt,
+            ConfirmedAt = activationEntity.ConfirmedAt
         };
     }
 
-    public async Task SetStatusAsync(Guid id, string status, DateTime? confirmedAt = null)
+    /// <inheritdoc />
+    public async Task SetStatusAsync(Guid id, ActivationStatus status, DateTime? confirmedAt = null)
     {
-        var e = await _db.Activations.FindAsync(id);
-        if (e is null) return;
-        e.Status = status;
-        e.ConfirmedAt = confirmedAt;
+        var activationEntity = await _db.Activations.FindAsync(id);
+        if (activationEntity is null)
+        {
+            return;
+        }
+
+        activationEntity.Status = status.ToString();
+        activationEntity.ConfirmedAt = confirmedAt;
         await _db.SaveChangesAsync();
     }
 }

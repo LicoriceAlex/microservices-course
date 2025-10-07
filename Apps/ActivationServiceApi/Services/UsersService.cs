@@ -1,63 +1,68 @@
+using Domain.Entities;
 using Services.Contracts.Dtos.Users;
-using Services.Contracts.Models;
 using Services.Contracts.Repositories;
 using Services.Interfaces;
 
 namespace Services;
 
 /// <summary>
-/// реализация сервиса пользователей
+/// Реализация сервиса пользователей
 /// </summary>
 public class UsersService : IUsersService
 {
-    private readonly IUserRepository _users;
+    private readonly IUserRepository _userRepository;
 
-    public UsersService(IUserRepository users)
+    public UsersService(IUserRepository userRepository)
     {
-        _users = users;
+        _userRepository = userRepository;
     }
 
+    /// <inheritdoc />
     public async Task<Guid> CreateAsync(UserCreateRequest dto)
     {
-        var data = new UserData
+        var entity = new User
         {
-            Id = Guid.NewGuid(),
             Email = dto.Email,
             Name = dto.Name,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
-        return await _users.CreateAsync(data);
+        return await _userRepository.CreateAsync(entity);
     }
 
+    /// <inheritdoc />
     public async Task<UserResponse?> GetAsync(Guid id)
     {
-        var u = await _users.GetAsync(id);
-        if (u is null) return null;
+        var user = await _userRepository.GetAsync(id);
+        if (user is null)
+        {
+            return null;
+        }
 
         return new UserResponse
         {
-            Id = u.Id,
-            Email = u.Email,
-            Name = u.Name,
-            IsActive = u.IsActive,
-            CreatedAt = u.CreatedAt
+            Id = user.Id,
+            Email = user.Email,
+            Name = user.Name,
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt
         };
     }
 
+    /// <inheritdoc />
     public async Task<List<UserResponse>> GetAllAsync()
     {
-        var list = await _users.GetAllAsync();
+        var list = await _userRepository.GetAllAsync();
         var result = new List<UserResponse>(list.Count);
-        foreach (var u in list)
+        foreach (var user in list)
         {
             result.Add(new UserResponse
             {
-                Id = u.Id,
-                Email = u.Email,
-                Name = u.Name,
-                IsActive = u.IsActive,
-                CreatedAt = u.CreatedAt
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt
             });
         }
         return result;

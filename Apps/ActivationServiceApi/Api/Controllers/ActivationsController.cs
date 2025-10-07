@@ -5,48 +5,56 @@ using Services.Interfaces;
 namespace Api.Controllers;
 
 /// <summary>
-/// контроллер активаций
+/// Контроллер активаций подарочных карт
 /// </summary>
 [ApiController]
 [Route("api/activations")]
 public class ActivationsController : ControllerBase
 {
-    private readonly IActivationsService _svc;
+    private readonly IActivationsService _activationsService;
 
-    public ActivationsController(IActivationsService svc)
+    public ActivationsController(IActivationsService activationsService)
     {
-        _svc = svc;
+        _activationsService = activationsService;
     }
 
-    /// <summary>получить все активации</summary>
+    /// <summary>
+    /// Получить все активации
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var data = await _svc.GetAllAsync();
+        var data = await _activationsService.GetAllAsync();
         return Ok(data);
     }
 
-    /// <summary>получить активацию</summary>
+    /// <summary>
+    /// Получить активацию
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var data = await _svc.GetAsync(id);
+        var data = await _activationsService.GetAsync(id);
         return Ok(data);
     }
 
-    /// <summary>создать активацию</summary>
+    /// <summary>
+    /// Создать активацию
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ActivationCreateRequest dto)
     {
-        var id = await _svc.CreateAsync(dto);
+        var id = await _activationsService.CreateAsync(dto);
         return Ok(id);
     }
 
-    /// <summary>подтвердить активацию</summary>
+    /// <summary>
+    /// Подтвердить активацию
+    /// </summary>
     [HttpPost("{id:guid}/confirm")]
     public async Task<IActionResult> Confirm(Guid id, [FromBody] ActivationConfirmRequest dto)
     {
-        await _svc.ConfirmAsync(id, dto);
+        await _activationsService.ConfirmAsync(id, dto);
         return NoContent();
     }
 }

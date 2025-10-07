@@ -1,13 +1,24 @@
-using Services.Contracts.Models;
+using Domain.Entities;
 
 namespace Services.Contracts.Repositories;
 
 /// <summary>
-/// репозиторий пользователей
+/// Репозиторий пользователей
 /// </summary>
 public interface IUserRepository
 {
-    Task<Guid> CreateAsync(UserData user);
-    Task<UserData?> GetAsync(Guid id);
-    Task<List<UserData>> GetAllAsync();
+    /// <summary>
+    /// Создать пользователя
+    /// </summary>
+    Task<Guid> CreateAsync(User user);
+
+    /// <summary>
+    /// Получить пользователя
+    /// </summary>
+    Task<User?> GetAsync(Guid id);
+
+    /// <summary>
+    /// Получить всех пользователей
+    /// </summary>
+    Task<List<User>> GetAllAsync();
 }

@@ -1,12 +1,12 @@
+using Domain.Entities;
 using Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Services.Contracts.Models;
 using Services.Contracts.Repositories;
 
 namespace Infrastructure.Repositories;
 
 /// <summary>
-/// репозиторий событий аудита на ef core
+/// Репозиторий событий аудита на ef core
 /// </summary>
 public class ActivationEventRepository : IActivationEventRepository
 {
@@ -17,9 +17,10 @@ public class ActivationEventRepository : IActivationEventRepository
         _db = db;
     }
 
-    public async Task AddAsync(ActivationEventData ev)
+    /// <inheritdoc />
+    public async Task AddAsync(ActivationEvent ev)
     {
-        var e = new ActivationEventEntity
+        var activationEventEntity = new ActivationEventEntity
         {
             Id = ev.Id,
             ActivationId = ev.ActivationId,
@@ -27,21 +28,22 @@ public class ActivationEventRepository : IActivationEventRepository
             Message = ev.Message,
             CreatedAt = ev.CreatedAt
         };
-        _db.ActivationEvents.Add(e);
+        _db.ActivationEvents.Add(activationEventEntity);
         await _db.SaveChangesAsync();
     }
 
-    public async Task<List<ActivationEventData>> GetByActivationAsync(Guid activationId)
+    /// <inheritdoc />
+    public async Task<List<ActivationEvent>> GetByActivationAsync(Guid activationId)
     {
         var list = await _db.ActivationEvents.AsNoTracking()
             .Where(x => x.ActivationId == activationId)
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
 
-        var result = new List<ActivationEventData>(list.Count);
+        var result = new List<ActivationEvent>(list.Count);
         foreach (var e in list)
         {
-            result.Add(new ActivationEventData
+            result.Add(new ActivationEvent
             {
                 Id = e.Id,
                 ActivationId = e.ActivationId,

@@ -1,12 +1,19 @@
-using Services.Contracts.Models;
+using Domain.Entities;
 
 namespace Services.Contracts.Repositories;
 
 /// <summary>
-/// репозиторий событий аудита
+/// Репозиторий событий аудита
 /// </summary>
 public interface IActivationEventRepository
 {
-    Task AddAsync(ActivationEventData ev);
-    Task<List<ActivationEventData>> GetByActivationAsync(Guid activationId);
+    /// <summary>
+    /// Добавить событие
+    /// </summary>
+    Task AddAsync(ActivationEvent ev);
+
+    /// <summary>
+    /// Получить события по активации
+    /// </summary>
+    Task<List<ActivationEvent>> GetByActivationAsync(Guid activationId);
 }

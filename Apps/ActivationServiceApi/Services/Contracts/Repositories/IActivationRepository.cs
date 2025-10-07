@@ -1,15 +1,35 @@
-using Services.Contracts.Models;
+using Domain.Entities;
+using Domain.Enums;
 
 namespace Services.Contracts.Repositories;
 
 /// <summary>
-/// репозиторий активаций
+/// Репозиторий активаций
 /// </summary>
 public interface IActivationRepository
 {
-    Task<Guid> CreateAsync(ActivationData activation);
-    Task<ActivationData?> GetAsync(Guid id);
-    Task<List<ActivationData>> GetAllAsync();
-    Task<ActivationData?> GetByIdempotencyKeyAsync(string key);
-    Task SetStatusAsync(Guid id, string status, DateTime? confirmedAt = null);
+    /// <summary>
+    /// Создать активацию
+    /// </summary>
+    Task<Guid> CreateAsync(Activation activation);
+
+    /// <summary>
+    /// Получить активацию
+    /// </summary>
+    Task<Activation?> GetAsync(Guid id);
+
+    /// <summary>
+    /// Получить все активации
+    /// </summary>
+    Task<List<Activation>> GetAllAsync();
+
+    /// <summary>
+    /// Получить по ключу идемпотентности
+    /// </summary>
+    Task<Activation?> GetByIdempotencyKeyAsync(string key);
+
+    /// <summary>
+    /// Установить статус
+    /// </summary>
+    Task SetStatusAsync(Guid id, ActivationStatus status, DateTime? confirmedAt = null);
 }

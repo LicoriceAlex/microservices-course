@@ -7,7 +7,19 @@ namespace Services.Interfaces;
 /// </summary>
 public interface IUsersService
 {
+    /// <summary>
+    /// Создать пользователя
+    /// </summary>
     Task<Guid> CreateAsync(UserCreateRequest dto);
+    
+    /// <summary>
+    /// Получить пользователя
+    /// </summary>
     Task<UserResponse?> GetAsync(Guid id);
+    
+    /// <summary>
+    /// Получить список всех пользовтелей
+    /// </summary>
+    /// <returns></returns>
     Task<List<UserResponse>> GetAllAsync();
 }

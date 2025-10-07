@@ -1,12 +1,12 @@
+using Domain.Entities;
 using Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Services.Contracts.Models;
 using Services.Contracts.Repositories;
 
 namespace Infrastructure.Repositories;
 
 /// <summary>
-/// репозиторий пользователей на ef core
+/// Репозиторий пользователей на ef core
 /// </summary>
 public class UserRepository : IUserRepository
 {
@@ -16,10 +16,11 @@ public class UserRepository : IUserRepository
     {
         _db = db;
     }
-
-    public async Task<Guid> CreateAsync(UserData user)
+    
+    /// <inheritdoc />
+    public async Task<Guid> CreateAsync(User user)
     {
-        var e = new UserEntity
+        var userEntity = new UserEntity
         {
             Id = user.Id,
             Email = user.Email,
@@ -27,25 +28,42 @@ public class UserRepository : IUserRepository
             IsActive = user.IsActive,
             CreatedAt = user.CreatedAt
         };
-        _db.Users.Add(e);
+        _db.Users.Add(userEntity);
         await _db.SaveChangesAsync();
-        return e.Id;
+        return userEntity.Id;
     }
 
-    public async Task<UserData?> GetAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<User?> GetAsync(Guid id)
     {
-        var e = await _db.Users.FindAsync(id);
-        if (e is null) return null;
-        return new UserData { Id = e.Id, Email = e.Email, Name = e.Name, IsActive = e.IsActive, CreatedAt = e.CreatedAt };
+        var userEntity = await _db.Users.FindAsync(id);
+        if (userEntity is null) return null;
+
+        return new User
+        {
+            Id = userEntity.Id,
+            Email = userEntity.Email,
+            Name = userEntity.Name,
+            IsActive = userEntity.IsActive,
+            CreatedAt = userEntity.CreatedAt
+        };
     }
 
-    public async Task<List<UserData>> GetAllAsync()
+    /// <inheritdoc />
+    public async Task<List<User>> GetAllAsync()
     {
         var list = await _db.Users.AsNoTracking().OrderBy(x => x.CreatedAt).ToListAsync();
-        var result = new List<UserData>(list.Count);
+        var result = new List<User>(list.Count);
         foreach (var e in list)
         {
-            result.Add(new UserData { Id = e.Id, Email = e.Email, Name = e.Name, IsActive = e.IsActive, CreatedAt = e.CreatedAt });
+            result.Add(new User
+            {
+                Id = e.Id,
+                Email = e.Email,
+                Name = e.Name,
+                IsActive = e.IsActive,
+                CreatedAt = e.CreatedAt
+            });
         }
         return result;
     }

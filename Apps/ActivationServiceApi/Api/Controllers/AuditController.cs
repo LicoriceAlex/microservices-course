@@ -5,39 +5,41 @@ using Services.Contracts.Repositories;
 namespace Api.Controllers;
 
 /// <summary>
-/// контроллер чтения аудита активаций
+/// Контроллер чтения аудита активаций
 /// </summary>
 [ApiController]
 [Route("api/audit")]
 public class AuditController : ControllerBase
 {
-    private readonly IActivationEventRepository _events;
+    private readonly IActivationEventRepository _activationEventRepository;
 
-    public AuditController(IActivationEventRepository eventsRepository)
+    public AuditController(IActivationEventRepository activationEventRepositoryRepository)
     {
-        _events = eventsRepository;
+        _activationEventRepository = activationEventRepositoryRepository;
     }
 
-    /// <summary>получить события по активации</summary>
+    /// <summary>
+    /// Получить события по активации
+    /// </summary>
     [HttpGet("activation/{activationId:guid}")]
     public async Task<IActionResult> GetEventsByActivation(Guid activationId)
     {
-        var list = await _events.GetByActivationAsync(activationId);
-        if (list == null || list.Count == 0)
+        var list = await _activationEventRepository.GetByActivationAsync(activationId);
+        if (list.Count == 0)
         {
             return NotFound($"события для активации {activationId} не найдены");
         }
 
         var result = new List<ActivationEventResponse>(list.Count);
-        foreach (var e in list)
+        foreach (var activationEvent in list)
         {
             result.Add(new ActivationEventResponse
             {
-                Id = e.Id,
-                ActivationId = e.ActivationId,
-                EventType = e.EventType,
-                Message = e.Message,
-                CreatedAt = e.CreatedAt
+                Id = activationEvent.Id,
+                ActivationId = activationEvent.ActivationId,
+                EventType = activationEvent.EventType,
+                Message = activationEvent.Message,
+                CreatedAt = activationEvent.CreatedAt
             });
         }
 
