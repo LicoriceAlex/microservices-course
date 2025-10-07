@@ -81,6 +81,7 @@
 - GET /api/activations/{id} — получить активацию
 - GET /api/activations — список активаций
 - GET /health — проверить состояние сервиса
+- GET /api/audit/activation/{Id} - получить список событий по активации
 
 ## 3. System Design схема
 <img width="542" height="193" alt="микросервисы drawio" src="https://github.com/user-attachments/assets/196d0a80-859f-4cd9-ab13-1187ece3cf55" />
