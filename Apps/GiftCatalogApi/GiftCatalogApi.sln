@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{E0A2349B-2476-447B-959D-8106B443EFC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "Logic\Logic.csproj", "{7ED06A5F-59D3-4B58-837C-1CAC4E1A6722}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "Dal\Dal.csproj", "{1F9986B2-7515-43CA-815F-89A2A116CE8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0A2349B-2476-447B-959D-8106B443EFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0A2349B-2476-447B-959D-8106B443EFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0A2349B-2476-447B-959D-8106B443EFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0A2349B-2476-447B-959D-8106B443EFC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED06A5F-59D3-4B58-837C-1CAC4E1A6722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED06A5F-59D3-4B58-837C-1CAC4E1A6722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED06A5F-59D3-4B58-837C-1CAC4E1A6722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED06A5F-59D3-4B58-837C-1CAC4E1A6722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F9986B2-7515-43CA-815F-89A2A116CE8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F9986B2-7515-43CA-815F-89A2A116CE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F9986B2-7515-43CA-815F-89A2A116CE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F9986B2-7515-43CA-815F-89A2A116CE8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
