@@ -1,0 +1,61 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+out/
+artifacts/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE
+.vs/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+logs/
+
+# Environment & config
+.env
+.env.*
+secrets.json
+appsettings.*.local.json
+
+# EF migrations backups
+*Migrations*/_*.cs
+
+# Generated files
+*.Generated.cs
+*.g.cs
+*.designer.cs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+*.pid
+
+# JetBrains Rider
+.idea/
+*.iml
+.shelf/
+workspace.xml
+tasks.xml
+.idea_modules/
+
+# Visual Studio
+*.dbmdl
+*.jfm
+*.pdb
+*.opendb
+*.vshost.*
+*.tlog
+*.lastcodeanalysissucceeded
+*.cachefile
+*.bak
