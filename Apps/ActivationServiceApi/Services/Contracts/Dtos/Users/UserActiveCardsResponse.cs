@@ -1,19 +1,22 @@
-namespace Services.Contracts.Dtos.Activations;
+namespace Services.Contracts.Dtos.Users;
 
-public record ActivationResponse
+/// <summary>
+/// Респонс модель активных карт пользователя
+/// </summary>
+public record UserActiveCardsResponse
 {
-    public required Guid Id { get; init; }
+    /// <summary>
+    /// Идентификатор пользователя
+    /// </summary>
     public required Guid UserId { get; init; }
-    public required string CardCodeHash { get; init; }
-    public required string Status { get; init; }
-    public required DateTime CreatedAt { get; init; }
-    public DateTime? ConfirmedAt { get; init; }
     
-    public CardShortDto? Card { get; init; }
+    /// <summary>
+    /// Список активных кард пользователя
+    /// </summary>
+    public required List<UserActiveCardsDto> ActiveCards { get; init; }
 }
 
-
-public record CardShortDto
+public record UserActiveCardsDto
 {
     /// <summary>
     /// Идентификатор карты

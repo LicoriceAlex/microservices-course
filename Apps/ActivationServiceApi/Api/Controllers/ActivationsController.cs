@@ -28,16 +28,12 @@ public class ActivationsController : ControllerBase
         return Ok(data);
     }
 
-    /// <summary>
-    /// Получить активацию
-    /// </summary>
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id, [FromQuery] bool includeCard)
     {
-        var data = await _activationsService.GetAsync(id);
+        var data = await _activationsService.GetAsync(id, includeCard);
         return Ok(data);
     }
-
     /// <summary>
     /// Создать активацию
     /// </summary>

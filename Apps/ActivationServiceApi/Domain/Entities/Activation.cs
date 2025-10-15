@@ -21,6 +21,11 @@ public class Activation
     /// sha256 хэш кода карты
     /// </summary>
     public required string CardCodeHash { get; set; }
+    
+    /// <summary>
+    /// Id карты
+    /// </summary>
+    public required Guid CardId { get; set; }
 
     /// <summary>
     /// Ключ идемпотентности
