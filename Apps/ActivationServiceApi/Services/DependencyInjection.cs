@@ -1,5 +1,10 @@
+using CoreLib.HttpService.Services;
+using CoreLib.HttpService.Services.Interfaces;
+using CoreLib.TraceId;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services.External;
+using Services.External.Interfaces;
 using Services.Interfaces;
 
 namespace Services;
@@ -16,6 +21,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IActivationsService, ActivationsService>();
+        services.AddScoped<IGiftCatalogClient, GiftCatalogClient>();
         return services;
     }
 }

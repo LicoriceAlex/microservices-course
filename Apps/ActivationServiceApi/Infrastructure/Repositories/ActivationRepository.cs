@@ -25,6 +25,7 @@ public class ActivationRepository : IActivationRepository
         {
             Id = a.Id,
             UserId = a.UserId,
+            CardId = a.CardId,
             CardCodeHash = a.CardCodeHash,
             IdempotencyKey = a.IdempotencyKey,
             Status = a.Status.ToString(),
@@ -49,6 +50,7 @@ public class ActivationRepository : IActivationRepository
         {
             Id = activationEntity.Id,
             UserId = activationEntity.UserId,
+            CardId = activationEntity.CardId,
             CardCodeHash = activationEntity.CardCodeHash,
             IdempotencyKey = activationEntity.IdempotencyKey,
             Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),
@@ -68,6 +70,7 @@ public class ActivationRepository : IActivationRepository
             {
                 Id = activationEntity.Id,
                 UserId = activationEntity.UserId,
+                CardId = activationEntity.CardId,
                 CardCodeHash = activationEntity.CardCodeHash,
                 IdempotencyKey = activationEntity.IdempotencyKey,
                 Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),
@@ -91,6 +94,7 @@ public class ActivationRepository : IActivationRepository
         {
             Id = activationEntity.Id,
             UserId = activationEntity.UserId,
+            CardId = activationEntity.CardId,
             CardCodeHash = activationEntity.CardCodeHash,
             IdempotencyKey = activationEntity.IdempotencyKey,
             Status = Enum.Parse<ActivationStatus>(activationEntity.Status, true),

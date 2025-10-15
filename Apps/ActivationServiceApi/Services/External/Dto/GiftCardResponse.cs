@@ -1,19 +1,6 @@
-namespace Services.Contracts.Dtos.Activations;
+namespace Services.External.Dto;
 
-public record ActivationResponse
-{
-    public required Guid Id { get; init; }
-    public required Guid UserId { get; init; }
-    public required string CardCodeHash { get; init; }
-    public required string Status { get; init; }
-    public required DateTime CreatedAt { get; init; }
-    public DateTime? ConfirmedAt { get; init; }
-    
-    public CardShortDto? Card { get; init; }
-}
-
-
-public record CardShortDto
+public sealed record GiftCardResponse
 {
     /// <summary>
     /// Идентификатор карты

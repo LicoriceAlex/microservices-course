@@ -10,6 +10,9 @@ public record ActivationCreateRequest
 
     /// <summary>sha256 хэш кода карты</summary>
     public required string CardCodeHash { get; init; }
+    
+    /// <summary>id карты</summary>
+    public required Guid CardId { get; init; }
 
     /// <summary>ключ идемпотентности</summary>
     public required string IdempotencyKey { get; init; }

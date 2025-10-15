@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using Domain.Entities;
 using Domain.Enums;
 using Services.Contracts.Dtos.Activations;
 using Services.Contracts.Repositories;
+using Services.External.Interfaces;
 using Services.Interfaces;
 
 namespace Services;
@@ -14,15 +16,18 @@ public class ActivationsService : IActivationsService
     private readonly IActivationRepository _activationRepository;
     private readonly IActivationEventRepository _activationEventRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IGiftCatalogClient _giftCatalogClient;
 
     public ActivationsService(
         IActivationRepository activationRepository, 
         IActivationEventRepository activationEventRepositoryRepo, 
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IGiftCatalogClient giftCatalogClient)
     {
         _activationRepository = activationRepository;
         _activationEventRepository = activationEventRepositoryRepo;
         _userRepository = userRepository;
+        _giftCatalogClient = giftCatalogClient;
     }
 
     /// <inheritdoc />
@@ -43,6 +48,7 @@ public class ActivationsService : IActivationsService
         var entity = new Activation
         {
             UserId = dto.UserId,
+            CardId = dto.CardId,
             CardCodeHash = dto.CardCodeHash,
             IdempotencyKey = dto.IdempotencyKey,
             Status = ActivationStatus.Pending,
@@ -90,12 +96,34 @@ public class ActivationsService : IActivationsService
     }
 
     /// <inheritdoc />
-    public async Task<ActivationResponse?> GetAsync(Guid id)
+    public async Task<ActivationResponse?> GetAsync(Guid id, bool includeCard = false)
     {
         var activation = await _activationRepository.GetAsync(id);
         if (activation is null)
         {
             return null;
+        }
+
+        CardShortDto? card = null;
+        if (includeCard)
+        {
+            try
+            {
+                var giftCardResponse = await _giftCatalogClient.GetCardByIdAsync(activation.CardId);
+
+                card = new CardShortDto
+                {
+                    Id = giftCardResponse.Id,
+                    BatchId = giftCardResponse.BatchId,
+                    Status = giftCardResponse.Status,
+                    MaskedCode = giftCardResponse.MaskedCode,
+                    ExpireAt = giftCardResponse.ExpireAt
+                };
+            }
+            catch (Exception ex)
+            {
+                // продолжаем без карты
+            }
         }
 
         return new ActivationResponse
@@ -105,7 +133,8 @@ public class ActivationsService : IActivationsService
             CardCodeHash = activation.CardCodeHash,
             Status = activation.Status.ToString(),
             CreatedAt = activation.CreatedAt,
-            ConfirmedAt = activation.ConfirmedAt
+            ConfirmedAt = activation.ConfirmedAt,
+            Card = card
         };
     }
 

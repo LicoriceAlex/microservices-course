@@ -1,3 +1,4 @@
+using CoreLib.HttpService;
 using Infrastructure;
 using Services;
 using CoreLib.Logs;
@@ -15,8 +16,13 @@ builder.Host.UseSerilog();
 builder.Services.TryAddTraceId();
 builder.Services.AddLoggerServices();
 
-builder.Services.AddHttpClient("default")
-    .AddHttpMessageHandler<TraceIdHttpMessageHandler>();
+builder.Services.AddHttpRequestService();
+
+builder.Services.AddHttpClient("gift-catalog", c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration["GIFT_CATALOG_BASEURL"]!);
+    c.Timeout = TimeSpan.FromSeconds(5);
+}).AddHttpMessageHandler<TraceIdHttpMessageHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

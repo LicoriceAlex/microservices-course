@@ -20,7 +20,7 @@ public interface IActivationsService
     /// <summary>
     /// Получить акцивацию по id
     /// </summary>
-    Task<ActivationResponse?> GetAsync(Guid id);
+    Task<ActivationResponse?> GetAsync(Guid id, bool includeCard = false);
     
     /// <summary>
     /// Получить список всех активаций

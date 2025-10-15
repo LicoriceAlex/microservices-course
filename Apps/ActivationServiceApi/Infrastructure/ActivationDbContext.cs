@@ -30,6 +30,7 @@ public class ActivationDbContext : DbContext
             e.ToTable("activations");
             e.HasKey(x => x.Id);
             e.Property(x => x.CardCodeHash).HasMaxLength(64).IsRequired();
+            e.Property(x => x.CardId).IsRequired();
             e.Property(x => x.IdempotencyKey).HasMaxLength(64).IsRequired();
             e.HasIndex(x => x.IdempotencyKey).IsUnique();
             e.Property(x => x.Status).HasMaxLength(32).IsRequired();
