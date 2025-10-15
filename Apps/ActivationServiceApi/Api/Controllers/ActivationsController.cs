@@ -29,14 +29,9 @@ public class ActivationsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id, [FromQuery] string? expand = null)
+    public async Task<IActionResult> Get(Guid id, [FromQuery] bool includeCard)
     {
-        var includeCard = string.Equals(expand, "card", StringComparison.OrdinalIgnoreCase)
-                          || (expand?.Split(',').Any(x => x.Trim().Equals("card", StringComparison.OrdinalIgnoreCase)) ?? false);
-
         var data = await _activationsService.GetAsync(id, includeCard);
-        if (data is null) return NotFound(new { error = "activation not found" });
-
         return Ok(data);
     }
     /// <summary>
