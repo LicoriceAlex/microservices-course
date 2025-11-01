@@ -1,3 +1,5 @@
+using Api.Messages.Consumers.Choreography;
+using Api.Messages.Consumers.Orchestration;
 using Dal;
 using Dal.Repositories.Interfaces;
 using Dal.Repositories.Implementations;
@@ -10,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CoreLib.Logs;
 using CoreLib.TraceId;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +51,38 @@ builder.Services.AddScoped<IDenominationUseCaseManager, DenominationUseCaseManag
 builder.Services.AddScoped<IBatchUseCaseManager, BatchUseCaseManager>();
 builder.Services.AddScoped<ICardUseCaseManager, CardUseCaseManager>();
 
+builder.Services.AddMassTransit(x =>
+{
+    // Оркестрация
+    x.AddConsumer<BlockCardConsumer>();
+    x.AddConsumer<ActivateCardConsumer>();
+
+    // Хореография
+    x.AddConsumer<ActivationInitiatedConsumer>();
+    x.AddConsumer<ActivationConfirmedConsumer>();
+
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host("localhost", "/", h => { h.Username("test"); h.Password("test"); });
+        
+        cfg.ReceiveEndpoint("block-card", e =>
+        {
+            e.UseInMemoryOutbox(ctx);
+            e.ConfigureConsumer<BlockCardConsumer>(ctx);
+        });
+
+        cfg.ReceiveEndpoint("activate-card", e =>
+        {
+            e.UseInMemoryOutbox(ctx);
+            e.ConfigureConsumer<ActivateCardConsumer>(ctx);
+        });
+        
+        cfg.ConfigureEndpoints(ctx);
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -68,13 +103,10 @@ app.UseHttpsRedirection();
 // 4. Контроллеры
 app.MapControllers();
 
-app.MapGet("/health", () =>
+app.MapGet("/health", () => Results.Ok(new
 {
-    return Results.Ok(new
-    {
-        status = "ok",
-        time = DateTime.UtcNow
-    });
-});
+    status = "ok",
+    time = DateTime.UtcNow
+}));
 
 app.Run();
