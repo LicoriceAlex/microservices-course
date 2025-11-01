@@ -26,4 +26,9 @@ public interface ICardsManager
     /// Разблокировать карту
     /// </summary>
     Task UnblockAsync(Guid id);
+    
+    /// <summary>
+    /// Активировать карту
+    /// </summary>
+    Task ActivateAsync(Guid id);
 }

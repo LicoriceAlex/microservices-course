@@ -10,7 +10,7 @@ namespace Logic.Managers;
 public class CardsManager : ICardsManager
 {
     private readonly ICardRepository _repo;
-    
+
     public CardsManager(ICardRepository repo)
     {
         _repo = repo;
@@ -60,5 +60,23 @@ public class CardsManager : ICardsManager
         }
 
         await _repo.SetStatusAsync(id, GiftCardStatus.Available);
+    }
+
+    /// <inheritdoc />
+    public async Task ActivateAsync(Guid id)
+    {
+        var card = await _repo.GetByIdAsync(id);
+        if (card == null)
+        {
+            throw new KeyNotFoundException($"Card {id} not found.");
+        }
+
+        // допускаем активацию только из статусов Reserved или Blocked
+        if (card.Status != GiftCardStatus.Reserved && card.Status != GiftCardStatus.Blocked)
+        {
+            throw new InvalidOperationException($"Card {id} cannot be activated from status {card.Status}.");
+        }
+
+        await _repo.SetStatusAsync(id, GiftCardStatus.Activated);
     }
 }

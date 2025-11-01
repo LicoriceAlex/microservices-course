@@ -1,9 +1,12 @@
 using CoreLib.HttpService;
 using Infrastructure;
+using MassTransit;
 using Services;
 using CoreLib.Logs;
 using CoreLib.TraceId;
 using Serilog;
+using Services.Messages.Consumers.Choreography;
+using Services.Messages.Consumers.Orchestration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,30 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddActivationServices(builder.Configuration);
 builder.Services.AddActivationInfrastructure(builder.Configuration);
 
+builder.Services.AddMassTransit(x =>
+{
+    // Оркестрация
+    x.AddConsumer<ConfirmActivationConsumer>();
+
+    // Хореография
+    x.AddConsumer<CardBlockedConsumer>();
+
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host("localhost", "/", h => { h.Username("test"); h.Password("test"); });
+        
+        cfg.ReceiveEndpoint("confirm-activation", e =>
+        {
+            e.UseInMemoryOutbox(ctx);
+            e.ConfigureConsumer<ConfirmActivationConsumer>(ctx);
+        });
+
+        cfg.ConfigureEndpoints(ctx);
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -51,13 +78,10 @@ app.UseHttpsRedirection();
 // 4. Контроллеры
 app.MapControllers();
 
-app.MapGet("/health", () =>
+app.MapGet("/health", () => Results.Ok(new
 {
-    return Results.Ok(new
-    {
-        status = "ok",
-        time = DateTime.UtcNow
-    });
-});
+    status = "ok",
+    time = DateTime.UtcNow
+}));
 
 app.Run();

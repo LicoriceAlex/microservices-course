@@ -35,6 +35,11 @@ public class CardRepository : ICardRepository
         if (card != null)
         {
             card.Status = status;
+            if (status == GiftCardStatus.Activated)
+            {
+                card.ActivatedAt = DateTime.UtcNow;
+            }
+            
             await _db.SaveChangesAsync();
         }
     }
