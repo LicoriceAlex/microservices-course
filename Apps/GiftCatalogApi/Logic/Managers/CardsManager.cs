@@ -1,3 +1,4 @@
+using CoreLib.DistributedSync.Abstractions;
 using Dal.Models;
 using Dal.Repositories.Interfaces;
 using Logic.Managers.Interfaces;
@@ -10,10 +11,12 @@ namespace Logic.Managers;
 public class CardsManager : ICardsManager
 {
     private readonly ICardRepository _repo;
+    private readonly IDistributedSemaphoreFactory _semFactory;
 
-    public CardsManager(ICardRepository repo)
+    public CardsManager(ICardRepository repo, IDistributedSemaphoreFactory semFactory)
     {
         _repo = repo;
+        _semFactory = semFactory;
     }
 
     /// <inheritdoc />
@@ -31,52 +34,48 @@ public class CardsManager : ICardsManager
     /// <inheritdoc />
     public async Task BlockAsync(Guid id)
     {
-        var card = await _repo.GetByIdAsync(id);
-        if (card is null)
+        var distributedSemaphore = _semFactory.Create($"gc:card:{id}:sem", maxCount: 1, lease: TimeSpan.FromSeconds(30));
+        await using (await distributedSemaphore.AcquireAsync(TimeSpan.FromSeconds(2)))
         {
-            throw new KeyNotFoundException($"Card {id} not found.");
-        }
+            var card = await _repo.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Card {id} not found.");
+            if (card.Status is GiftCardStatus.Activated or GiftCardStatus.Expired)
+            {
+                throw new InvalidOperationException($"Card {id} cannot be blocked in status {card.Status}.");
+            }
 
-        if (card.Status is GiftCardStatus.Activated or GiftCardStatus.Expired)
-        {
-            throw new InvalidOperationException($"Card {id} cannot be blocked in status {card.Status}.");
+            await _repo.SetStatusAsync(id, GiftCardStatus.Blocked);
         }
-
-        await _repo.SetStatusAsync(id, GiftCardStatus.Blocked);
     }
 
     /// <inheritdoc />
     public async Task UnblockAsync(Guid id)
     {
-        var card = await _repo.GetByIdAsync(id);
-        if (card is null)
+        var distributedSemaphore = _semFactory.Create($"gc:card:{id}:sem", 1, TimeSpan.FromSeconds(30));
+        await using (await distributedSemaphore.AcquireAsync(TimeSpan.FromSeconds(2)))
         {
-            throw new KeyNotFoundException($"Card {id} not found.");
-        }
+            var card = await _repo.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Card {id} not found.");
+            if (card.Status != GiftCardStatus.Blocked)
+            {
+                throw new InvalidOperationException($"Card {id} is not Blocked.");
+            }
 
-        if (card.Status != GiftCardStatus.Blocked)
-        {
-            throw new InvalidOperationException($"Card {id} is not Blocked.");
+            await _repo.SetStatusAsync(id, GiftCardStatus.Available);
         }
-
-        await _repo.SetStatusAsync(id, GiftCardStatus.Available);
     }
 
     /// <inheritdoc />
     public async Task ActivateAsync(Guid id)
     {
-        var card = await _repo.GetByIdAsync(id);
-        if (card == null)
+        var distributedSemaphore = _semFactory.Create($"gc:card:{id}:sem", 1, TimeSpan.FromSeconds(30));
+        await using (await distributedSemaphore.AcquireAsync(TimeSpan.FromSeconds(2)))
         {
-            throw new KeyNotFoundException($"Card {id} not found.");
-        }
+            var card = await _repo.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Card {id} not found.");
+            if (card.Status is not (GiftCardStatus.Reserved or GiftCardStatus.Blocked))
+            {
+                throw new InvalidOperationException($"Card {id} cannot be activated from status {card.Status}.");
+            }
 
-        // допускаем активацию только из статусов Reserved или Blocked
-        if (card.Status != GiftCardStatus.Reserved && card.Status != GiftCardStatus.Blocked)
-        {
-            throw new InvalidOperationException($"Card {id} cannot be activated from status {card.Status}.");
+            await _repo.SetStatusAsync(id, GiftCardStatus.Activated);
         }
-
-        await _repo.SetStatusAsync(id, GiftCardStatus.Activated);
     }
 }
