@@ -6,6 +6,7 @@ using Dal.Repositories.Implementations;
 using Logic.Managers;
 using Api.UseCases.Interfaces;
 using Api.UseCases;
+using CoreLib.DistributedSync.Redis;
 using Dal.Repositories;
 using Logic.Managers.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,8 @@ builder.Services.AddScoped<IVendorUseCaseManager, VendorUseCaseManager>();
 builder.Services.AddScoped<IDenominationUseCaseManager, DenominationUseCaseManager>();
 builder.Services.AddScoped<IBatchUseCaseManager, BatchUseCaseManager>();
 builder.Services.AddScoped<ICardUseCaseManager, CardUseCaseManager>();
+
+builder.Services.AddRedisDistributedSync(builder.Configuration);
 
 builder.Services.AddMassTransit(x =>
 {
